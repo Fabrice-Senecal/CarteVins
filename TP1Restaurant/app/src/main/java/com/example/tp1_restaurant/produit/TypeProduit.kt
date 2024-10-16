@@ -7,3 +7,7 @@ enum class TypeProduit {
     BIERE,
     AUTRE
 }
+
+public fun getRandomTypeProduit(): TypeProduit {
+    return TypeProduit.values().random()
+}

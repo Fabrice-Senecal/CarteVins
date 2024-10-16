@@ -7,10 +7,12 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.tp1_restaurant.databinding.FragmentProduitListBinding
 import kotlinx.coroutines.launch
 
 private const val TAG = "ProduitListFragment"
@@ -21,7 +23,7 @@ class ProduitListFragment : Fragment() {
         get() = checkNotNull(_binding) {
             "Binding est null."
         }
-    private val produitListViewModels: ProduitListViewModel by viewModel()
+    private val produitListViewModels: ProduitListViewModel by viewModels()
 
 
 
@@ -30,8 +32,8 @@ class ProduitListFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        _binding = FragmentProduitsListBinding.inflate(inflater, container, false)
-        binding.produitsRecyclerView.layoutManager = LinearLayoutManager(context)
+        _binding = FragmentProduitListBinding.inflate(inflater, container, false)
+        binding.produitRecyclerView.layoutManager = LinearLayoutManager(context)
         return binding.root
     }
 
@@ -40,11 +42,13 @@ class ProduitListFragment : Fragment() {
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 produitListViewModels.produits.collect { produits ->
-                    binding.produitsRecyclerView.adapter = ProduitHolder.ProduitsListAdapter(produits) {produitId ->
-                        Log.d(TAG, produitId.toString())
+                    binding.produitRecyclerView.adapter = ProduitHolder.ProduitsListAdapter(produits) {produitId ->
+                        Log.d(TAG, produitId.toString() + "sa marche")
+                        /*
                         findNavController().navigate(
                             ProduitsListFragmentDirections.showProduitDetails(produitId)
                         )
+                         */
                     }
                 }
             }

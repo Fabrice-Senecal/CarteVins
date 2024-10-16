@@ -26,7 +26,7 @@ interface ProduitDao {
     @Update
     suspend fun update(produit : Produit)
 
-    @Delete
-    suspend fun delete(produit : Produit)
+    @Query("DELETE FROM produits WHERE id=(:id)")
+    suspend fun delete(id : UUID)
 
 }
