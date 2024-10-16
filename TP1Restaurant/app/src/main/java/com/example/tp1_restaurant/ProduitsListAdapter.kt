@@ -1,0 +1,37 @@
+package com.example.tp1_restaurant
+
+import android.view.LayoutInflater
+import android.view.ViewGroup
+import androidx.recyclerview.widget.RecyclerView
+import com.example.tp1_restaurant.produit.Produit
+import java.util.UUID
+
+// A fix
+class ProduitHolder(val binding: ProduitListItemBinding) :
+    RecyclerView.ViewHolder(binding.root) {
+
+        fun bind(produit: Produit, onProduitClicked: (Produit) -> Unit) {
+
+            // logo ressources ici !!!
+        }
+
+
+    class ProduitsListAdapter(
+        private val produits: List<Produit>,
+        private val onProduitClicked: (Produit: UUID) -> Unit
+    ) : RecyclerView.Adapter<ProduitHolder>() {
+
+        override fun onBindViewHolder(holder: ProduitHolder, position: Int) {
+            val produit = produits[position]
+            holder.bind(produit, onProduitClicked)
+        }
+
+        override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ProduitHolder {
+            val inflater = LayoutInflater.from(parent.context)
+            val binding = ProduitListItemBinding.inflate(inflater, parent, false)
+            return ProduitHolder(binding)
+        }
+    }
+}
+
+
