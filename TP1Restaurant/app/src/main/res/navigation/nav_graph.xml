@@ -10,8 +10,8 @@
             android:name="com.example.tp1_restaurant.ProduitListFragment"
             android:label="ProduitListFragment"
             tools:layout="@layout/fragment_produit_list">
-            <argument android:name="produitId" app:argType="java.util.UUID" />
-            <action
+        <argument android:name="produitId" app:argType="java.util.UUID" />
+        <action
                 android:id="@+id/show_produit_detail"
                 app:destination="@+id/produitFragment" />
     </fragment>
@@ -20,7 +20,7 @@
             android:name="com.example.tp1_restaurant.ProduitFragment"
             android:label="ProduitFragment"
             tools:layout="@layout/fragment_produit">
-            <argument android:name="produitId" app:argType="java.util.UUID"/>
+        <argument android:name="produitId" app:argType="java.util.UUID"/>
     </fragment>
 
 </navigation>

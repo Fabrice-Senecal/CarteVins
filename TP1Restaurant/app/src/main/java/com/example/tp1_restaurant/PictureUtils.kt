@@ -4,6 +4,17 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import kotlin.math.roundToInt
 
+/**
+ * Obtenir un bitmap redimensionné proportionnellement à partir d'un chemin de fichier.
+ *
+ * @param path Le chemin vers l'image à redimensionner.
+ * @param destWidth La largeur cible à laquelle l'image doit être redimensionnée.
+ * @param destHeight La hauteur cible à laquelle l'image doit être redimensionnée.
+ *
+ * @return Un objet Bitmap redimensionné en fonction des dimensions spécifiées.
+ *
+ * @author Mouhammad Wagane Diouf et Fabrice Sénécal
+ */
 fun getScaledBitmap(path: String, destWidth: Int, destHeight: Int): Bitmap {
     val options = BitmapFactory.Options()
     options.inJustDecodeBounds = true

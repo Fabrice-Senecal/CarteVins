@@ -23,23 +23,45 @@ class ProduitViewModel(produitId: UUID) : ViewModel() {
         }
     }
 
+    /**
+     * Met à jour le produit.
+     *
+     * @param onUpdate La fonction de mise à jour.
+     */
     fun updateProduit(onUpdate: (Produit) -> Produit) {
         _produit.update { oldProduit ->
             oldProduit?.let {onUpdate(it)}
         }
     }
 
+    /**
+     * Supprime la carte
+     *
+     * @param onDelete la fonction de suppression
+     */
     fun deleteProduit(onDelete: (Produit) -> Produit) {
         _produit.update { oldProduit ->
             oldProduit?.let {onDelete(it)}
         }
     }
 
+    /**
+     * Lorsque la vue est détruite.
+     */
     override fun onCleared() {
         super.onCleared()
         produit.value?.let { produitRepository.updateProduit(it) }
     }
 
+    /**
+     * ProduitViewModelFactory permet de créer un ProduitViewModel.
+     *
+     * @param produitId L'identifiant du produit.
+     * @constructor Crée un ProduitViewModelFactory.
+     * @return Un ProduitViewModel.
+     *
+     * @author Mouhammad Wagane Diouf et Fabrice Sénécal
+     */
     class ProduitViewModelFactory(private val produitId: UUID) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ProduitViewModel(produitId) as T

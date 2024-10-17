@@ -1,8 +1,6 @@
 package com.example.tp1_restaurant
 
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.core.view.MenuHost
@@ -15,12 +13,21 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tp1_restaurant.databinding.FragmentProduitListBinding
 import com.example.tp1_restaurant.produit.Produit
+import com.example.tp1_restaurant.produit.TypeProduit
 import com.example.tp1_restaurant.produit.getRandomTypeProduit
 import kotlinx.coroutines.launch
 import java.util.*
 
 private const val TAG = "ProduitListFragment"
 
+/**
+ * La classe ProduitListFragment permet de gérer la liste des produits.
+ *
+ * @constructor Crée un ProduitListFragment.
+ * @return Un ProduitListFragment.
+ *
+ * @author Mouhammad Wagane Diouf et Fabrice Sénécal
+ */
 class ProduitListFragment : Fragment() {
     private var _binding: FragmentProduitListBinding? = null
     private val binding 
@@ -30,6 +37,15 @@ class ProduitListFragment : Fragment() {
 
     private val produitListViewModels: ProduitListViewModel by viewModels()
 
+    /**
+     * Lorsque la vue est créée.
+     *
+     * @param inflater Le layout inflater.
+     * @param container Le container.
+     * @param savedInstanceState L'état sauvegardé.
+     *
+     * @return La vue.
+     */
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,47 +56,53 @@ class ProduitListFragment : Fragment() {
         return binding.root
     }
 
+    /**
+     * Lorsque la vue est affichée.
+     *
+     * @param view La vue.
+     * @param savedInstanceState L'état sauvegardé.
+     */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 produitListViewModels.produits.collect { produits ->
-                    binding.produitRecyclerView.adapter = ProduitHolder.ProduitsListAdapter(produits) {produitId ->
+                    binding.produitRecyclerView.adapter = ProduitHolder.ProduitsListAdapter(produits) { produitId ->
                         //Log.d(TAG, produitId.toString() + "sa marche")
-
-                        findNavController().navigate(
-                            ProduitslistFragmentDirections.showProduitDetails(produitId)
-                        )
+                        findNavController().navigate(ProduitListFragmentDirections.showProduitDetail(produitId))
                     }
                 }
             }
         }
 
-        /**
-         * Ajouter section menu ici
-         * (menuHost et onMenuItemSelected)
-         */
         val menuHost: MenuHost = requireActivity()
         menuHost.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.fragment_produits_list, menu)
             }
 
+            /**
+             * Lorsqu'un item du menu est sélectionné.
+             *
+             * @param menuItem L'item du menu.
+             *
+             * @return Un booléen.
+             */
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
                 return when (menuItem.itemId) {
                     R.id.nouveau_produit -> {
                         viewLifecycleOwner.lifecycleScope.launch {
-                            val nouveauTravail = Produit(
+                            val nouveauProduit = Produit(
                                 UUID.randomUUID(),
                                 "",
-                                getRandomTypeProduit(),
+                                TypeProduit.AUTRE,
                                 "",
                                 "",
-                                "",
+                                null,
                             )
-                            produitListViewModels.addProduit(nouveauTravail)
+                            produitListViewModels.addProduit(nouveauProduit)
                             findNavController().navigate(
-                                TravauxListFragmentDirections.showTravailDetail(nouveauTravail.id)
+                                ProduitListFragmentDirections.showProduitDetail(nouveauProduit.id)
                             )
                         }
                         true
@@ -91,6 +113,9 @@ class ProduitListFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    /**
+     * Lorsque la vue est détruite.
+     */
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null

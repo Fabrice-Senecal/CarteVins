@@ -1,9 +1,6 @@
 package com.example.tp1_restaurant.database
 
-import androidx.room.Delete
-import androidx.room.Insert
-import androidx.room.Query
-import androidx.room.Update
+import androidx.room.*
 import kotlinx.coroutines.flow.Flow
 import com.example.tp1_restaurant.produit.Produit
 import java.util.UUID
@@ -13,20 +10,21 @@ import java.util.UUID
  *
  * @author Fabrice Sénécal et Mouhammad Wagane Diouf
  */
+@Dao
 interface ProduitDao {
     @Insert
     suspend fun insert(produit : Produit)
 
-    @Query("SELECT * FROM produits ORDER BY id")
-    suspend fun getAllProduits(): Flow<List<Produit>>
+    @Query("SELECT * FROM `produit-table` ORDER BY id")
+    fun getAllProduits(): Flow<List<Produit>>
 
-    @Query("SELECT * FROM produits WHERE id=(:id)")
+    @Query("SELECT * FROM `produit-table` WHERE id=(:id)")
     suspend fun getProduit(id: UUID): Produit
 
     @Update
     suspend fun update(produit : Produit)
 
-    @Query("DELETE FROM produits WHERE id=(:id)")
+    @Query("DELETE FROM `produit-table` WHERE id=(:id)")
     suspend fun delete(id : UUID)
 
 }

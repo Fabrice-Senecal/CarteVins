@@ -10,6 +10,13 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.*
 
+/**
+ * ViewModel pour la liste des produits.
+ *
+ * @constructor Crée un ProduitListViewModel.
+ *
+ * @author Mouhammad Wagane Diouf et Fabrice Sénécal
+ */
 class ProduitListViewModel : ViewModel() {
 
     private  val produitRepository = ProduitRepository.get()
@@ -23,6 +30,9 @@ class ProduitListViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Charge les produits
+     */
     suspend fun loadProduits() {
         for (i in 0 until 10) {
             val produit = Produit(
@@ -31,16 +41,19 @@ class ProduitListViewModel : ViewModel() {
                 getRandomTypeProduit(),
                 "Canada",
                 "Quelqun",
-                "photo #$i"
+                null
             )
 
             addProduit(produit)
         }
     }
 
+    /**
+     * Ajoute un produit.
+     *
+     * @param produit le produit à ajouter.
+     */
     suspend fun addProduit(produit: Produit) {
         produitRepository.addProduit(produit)
     }
-
-
 }
