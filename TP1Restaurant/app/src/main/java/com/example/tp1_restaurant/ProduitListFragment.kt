@@ -10,6 +10,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.tp1_restaurant.databinding.FragmentProduitListBinding
 import com.example.tp1_restaurant.produit.Produit
@@ -52,7 +53,7 @@ class ProduitListFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentProduitListBinding.inflate(inflater, container, false)
-        binding.produitRecyclerView.layoutManager = LinearLayoutManager(context)
+        binding.produitRecyclerView.layoutManager = GridLayoutManager(context, 3)
         return binding.root
     }
 
@@ -68,7 +69,6 @@ class ProduitListFragment : Fragment() {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 produitListViewModels.produits.collect { produits ->
                     binding.produitRecyclerView.adapter = ProduitHolder.ProduitsListAdapter(produits) { produitId ->
-                        //Log.d(TAG, produitId.toString() + "sa marche")
                         findNavController().navigate(ProduitListFragmentDirections.showProduitDetail(produitId))
                     }
                 }

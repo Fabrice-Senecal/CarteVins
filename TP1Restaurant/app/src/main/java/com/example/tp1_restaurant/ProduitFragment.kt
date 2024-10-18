@@ -5,17 +5,22 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
+import android.view.*
 import androidx.fragment.app.Fragment
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.FileProvider
+import androidx.core.view.MenuHost
+import androidx.core.view.MenuProvider
 import androidx.core.view.doOnLayout
 import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.example.tp1_restaurant.databinding.FragmentProduitBinding
 import com.example.tp1_restaurant.produit.Produit
@@ -23,6 +28,7 @@ import com.example.tp1_restaurant.produit.TypeProduit
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Date
+import kotlin.math.log
 
 /**
  * ProduitFragment affiche les détails d'un produit.
@@ -47,13 +53,16 @@ class ProduitFragment : Fragment() {
     private val prendrePhoto =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { photoPrise: Boolean ->
             if (photoPrise && photoFilename != null) {
+                Log.d("ProduitFragment", "Photo prise avec succès")
                 produitViewModel.updateProduit { oldProduit ->
                     oldProduit.copy(photoProduit = photoFilename)
                 }
+            } else {
+                Log.d("ProduitFragment", "Échec de la prise de photo")
             }
         }
-    private var photoFilename: String? = null
 
+    private var photoFilename: String? = null
 
     /**
      * Lorsque la vue est créée.
@@ -109,17 +118,147 @@ class ProduitFragment : Fragment() {
                 requireContext(),
                 Uri.parse("")
             )
+
             // cameraIntent.addCategory(Intent.CATEGORY_APP_CALCULATOR) // Pour tester !
             produitCamera.isEnabled = canResolveIntent(cameraIntent)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
-            produitViewModel.produit.collect { produit ->
-               produit?.let {
-                    updateUI(it)
+            viewLifecycleOwner.lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED) {
+                produitViewModel.produit.collect { produit ->
+                    produit?.let {
+                        updateUI(it)
+                    }
                 }
             }
         }
+
+        val menuHost: MenuHost = requireActivity()
+        menuHost.addMenuProvider(object : MenuProvider {
+            override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
+                menuInflater.inflate(com.example.tp1_restaurant.R.menu.fragment_produit, menu)
+            }
+            override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                return when (menuItem.itemId) {
+                    com.example.tp1_restaurant.R.id.delete -> {
+                        viewLifecycleOwner.lifecycleScope.launch {
+                            produitViewModel.deleteProduit()
+                            findNavController().popBackStack()
+                        }
+                        true
+                    }
+                    com.example.tp1_restaurant.R.id.share -> {
+                        val produit = produitViewModel.produit.value
+                        if (produit != null) {
+                            shareProduit(produit)
+                        } else {
+                            Toast.makeText(requireContext(), "Produit indisponible", Toast.LENGTH_SHORT).show()
+                        }
+                        true
+                    }
+                    else -> false
+                }
+            }
+        }, viewLifecycleOwner, Lifecycle.State.RESUMED)
+    }
+
+    private fun shareProduit(produit: Produit) {
+        val shareIntent = Intent(Intent.ACTION_SEND)
+        shareIntent.type = "text/plain"
+
+        val shareText = """
+        Découvrez ce produit :
+
+        Nom : ${produit.nom}
+        Type : ${produit.typeProduit}
+        Pays d'origine : ${produit.paysOrigine}
+        Producteur : ${produit.producteur}
+        """.trimIndent()
+
+        shareIntent.putExtra(Intent.EXTRA_TEXT, shareText)
+
+        if (produit.photoProduit != null) {
+            val photoFile = File(requireContext().applicationContext.filesDir, produit.photoProduit)
+            if (photoFile.exists()) {
+                val photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.example.tp1_restaurant.fileprovider",
+                    photoFile
+                )
+                shareIntent.putExtra(Intent.EXTRA_STREAM, photoUri)
+                shareIntent.type = "image/*"
+                shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            }
+        }
+
+        startActivity(Intent.createChooser(shareIntent, "Partager le produit"))
+    }
+
+
+    /**
+     * Vérifie si la caméra est disponible sur l'appareil.
+     *
+     * @return true si la caméra est disponible, false sinon.
+     */
+    private fun isCameraAvailable(): Boolean {
+        val packageManager: PackageManager = requireActivity().packageManager
+        return packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
+                packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
+    }
+
+    /**
+     * Vérifie les permissions de la caméra et les demande si nécessaire.
+     */
+    /*
+    private fun checkCameraPermissions() {
+        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
+        } else {
+            if (isCameraAvailable()) {
+                launchCamera()
+            } else {
+                Toast.makeText(requireContext(), "La caméra n'est pas disponible sur cet appareil.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
+    /**
+     * Gère les résultats de la demande de permission.
+     */
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission accordée, vérifie la disponibilité de la caméra
+                if (isCameraAvailable()) {
+                    launchCamera()
+                } else {
+                    Toast.makeText(requireContext(), "La caméra n'est pas disponible sur cet appareil.", Toast.LENGTH_SHORT).show()
+                }
+            } else {
+                // Permission refusée
+                Toast.makeText(requireContext(), "Permission de la caméra refusée.", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    */
+
+
+    /**
+     * Lance l'intent pour prendre une photo.
+     */
+    private fun launchCamera() {
+        Toast.makeText(requireContext(), "Bouton caméra cliqué", Toast.LENGTH_SHORT).show()
+        photoFilename = "IMG_${Date()}.JPG"
+        val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
+        Log.d("ProduitFragment", photoFichier.toString())
+        val photoUri = FileProvider.getUriForFile(
+            requireContext(),
+            "com.example.fileprovider",
+            photoFichier
+        )
+        Log.d("ProduitFragment", photoUri.toString())
+        prendrePhoto.launch(photoUri)
     }
 
     /**
@@ -128,6 +267,7 @@ class ProduitFragment : Fragment() {
      * @param produit Le produit à afficher.
      */
     private fun updateUI(produit: Produit) {
+
         binding.apply {
             if (nomProduit.text.toString() != produit.nom)
                 nomProduit.setText(produit.nom)
@@ -139,22 +279,15 @@ class ProduitFragment : Fragment() {
                 producteurProduit.setText(produit.producteur)
 
             val position = getPositionForProduitType(produit.typeProduit)
+
             if (spinnerTypeProduit.selectedItemPosition != position)
                 spinnerTypeProduit.setSelection(position)
 
             produitCamera.setOnClickListener {
-                photoFilename = "IMG_${Date()}.JPG"
-                val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
-                val photoUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    // a changer
-                    "com.example.fileprovider",
-                    photoFichier
-                )
-                prendrePhoto.launch(photoUri)
+                launchCamera()
             }
-            updatePhoto(produit.photoProduit)
         }
+        updatePhoto(produit.photoProduit)
     }
 
     /**
@@ -173,7 +306,6 @@ class ProduitFragment : Fragment() {
         return 0 // Default
     }
 
-
     /**
      * Vérifie si l'intent donné peut être résolu par une activité présente sur l'appareil.
      *
@@ -184,7 +316,6 @@ class ProduitFragment : Fragment() {
         val packageManager: PackageManager = requireActivity().packageManager
         return intent.resolveActivity(packageManager) != null
     }
-
 
     /**
      * Fait une mise à jour de la photo du produit.

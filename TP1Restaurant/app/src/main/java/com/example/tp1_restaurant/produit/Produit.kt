@@ -27,5 +27,5 @@ data class Produit(
     val typeProduit: TypeProduit,
     val paysOrigine: String,
     val producteur: String,
-    val photoProduit: Bitmap? //utiliser les bitmaps pour transformer l'image en string
+    val photoProduit: String? //utiliser les bitmaps pour transformer l'image en string
 ){}

@@ -25,7 +25,7 @@ class ProduitListViewModel : ViewModel() {
 
     init {
         viewModelScope.launch {
-            loadProduits();
+            //loadProduits();
             produitRepository.getProduits().collect { _produits.value = it }
         }
     }

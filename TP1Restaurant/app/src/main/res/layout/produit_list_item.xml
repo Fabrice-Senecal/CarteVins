@@ -1,57 +1,67 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+
+<androidx.cardview.widget.CardView
         xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:app="http://schemas.android.com/apk/res-auto"
-        android:padding="16dp"
-        android:orientation="vertical"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:gravity="center">
+        app:cardCornerRadius="15dp"
+        app:cardElevation="5dp"
+        android:layout_margin="10dp">
+
+        <LinearLayout
+                android:background="#BCF8F42E"
+                android:padding="8dp"
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center">
 
 
-    <ImageView
-        android:id="@+id/produit_photo"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_gravity="center"
-        android:scaleType="centerCrop"
-        android:src="@drawable/ic_placeholder"
-    />
+            <ImageView
+                android:id="@+id/produit_photo"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_placeholder"
+            />
 
-    <TextView
-            android:id="@+id/nom_produit"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Nom du produit"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:layout_marginTop="16dp"
-    />
-    <TextView
-        android:id="@+id/type_produit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Type de produit"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:gravity="center" />
+            <TextView
+                    android:id="@+id/nom_produit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Nom du produit"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:layout_marginTop="16dp"
+            />
+            <TextView
+                android:id="@+id/type_produit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Type de produit"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
 
-    <TextView
-        android:id="@+id/pays_origine"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pays d'origine"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:gravity="center" />
+            <TextView
+                android:id="@+id/pays_origine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Pays d'origine"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
 
-    <TextView
-        android:id="@+id/producteur_produit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Producteur"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:gravity="center" />
+            <TextView
+                android:id="@+id/producteur_produit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Producteur"
+                android:textSize="16sp"
+                android:layout_marginTop="8dp"
+                android:gravity="center" />
 
-</LinearLayout>
+        </LinearLayout>
+</androidx.cardview.widget.CardView>

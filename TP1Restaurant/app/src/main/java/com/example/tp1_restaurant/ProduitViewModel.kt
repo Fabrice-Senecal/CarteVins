@@ -39,9 +39,13 @@ class ProduitViewModel(produitId: UUID) : ViewModel() {
      *
      * @param onDelete la fonction de suppression
      */
-    fun deleteProduit(onDelete: (Produit) -> Produit) {
-        _produit.update { oldProduit ->
-            oldProduit?.let {onDelete(it)}
+    fun deleteProduit() {
+        val produitToDelete = _produit.value
+        if (produitToDelete != null) {
+            viewModelScope.launch {
+                produitRepository.deleteProduit(produitToDelete.id)
+                _produit.value = null
+            }
         }
     }
 

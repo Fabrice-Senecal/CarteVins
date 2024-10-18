@@ -3,4 +3,6 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="produit_ajouter"/>
+    <string name="partager_produit">Partager produit</string>
+    <string name="supprimer_produit">Supprimer produit</string>
 </resources>
