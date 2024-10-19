@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
+import android.widget.AdapterView
 import androidx.fragment.app.Fragment
 import android.widget.ArrayAdapter
 import android.widget.Toast
@@ -93,7 +94,7 @@ class ProduitFragment : Fragment() {
                 R.layout.simple_spinner_item,
                 TypeProduit.entries.toTypedArray()
             )
-            spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+            spinnerAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
             spinnerTypeProduit.adapter = spinnerAdapter
 
             nomProduit.doOnTextChanged { text, _, _, _ ->
@@ -112,6 +113,23 @@ class ProduitFragment : Fragment() {
                 produitViewModel.updateProduit { oldProduit ->
                     oldProduit.copy(producteur = text.toString())
                 }
+            }
+
+            spinnerTypeProduit.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                    val selectedItem = parent?.getItemAtPosition(position) as TypeProduit
+                    produitViewModel.updateProduit { oldProduit ->
+                        oldProduit.copy(typeProduit = selectedItem)
+                    }
+                }
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+                    // Ne rien faire si aucun élément n'est sélectionné
+                }
+            }
+
+            boutonRetour.setOnClickListener {
+                findNavController().popBackStack()
             }
 
             val cameraIntent = prendrePhoto.contract.createIntent(

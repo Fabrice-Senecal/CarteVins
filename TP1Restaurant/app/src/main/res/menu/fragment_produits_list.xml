@@ -3,7 +3,7 @@
       xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
             android:id="@+id/nouveau_produit"
-            android:icon="@drawable/ic_placeholder"
+            android:icon="@drawable/baseline_add_24"
             android:title="@string/produit_ajouter"
             app:showAsAction="ifRoom|withText" />
 </menu>

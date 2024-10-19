@@ -9,5 +9,6 @@
         android:layout_height="match_parent"
         app:defaultNavHost="true"
         app:navGraph="@navigation/nav_graph"
-        tools:context=".MainActivity"/>
+        tools:context=".MainActivity"
+        android:background="#3a2449"/>
 
