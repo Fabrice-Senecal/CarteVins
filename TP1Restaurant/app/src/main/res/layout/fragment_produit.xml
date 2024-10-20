@@ -58,7 +58,19 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:background="@drawable/back_button"
-            android:src="@drawable/baseline_camera_24"/>
+            android:src="@drawable/baseline_camera_24"
+            android:visibility="visible"/>
+
+    <ImageButton
+            android:id="@+id/produit_Camera1"
+            android:padding="5dp"
+            android:layout_margin="5dp"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:background="@drawable/back_button"
+            android:src="@drawable/baseline_camera_24"
+            android:visibility="invisible"/>
 
     <View
             android:layout_width="match_parent"

@@ -3,7 +3,6 @@ package com.example.tp1_restaurant
 import android.R
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -29,7 +28,7 @@ import com.example.tp1_restaurant.produit.TypeProduit
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Date
-import kotlin.math.log
+
 
 /**
  * ProduitFragment affiche les détails d'un produit.
@@ -65,6 +64,7 @@ class ProduitFragment : Fragment() {
 
     private var photoFilename: String? = null
 
+
     /**
      * Lorsque la vue est créée.
      *
@@ -87,6 +87,7 @@ class ProduitFragment : Fragment() {
      */
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
 
         binding.apply {
             val spinnerAdapter = ArrayAdapter(
@@ -129,16 +130,9 @@ class ProduitFragment : Fragment() {
             }
 
             boutonRetour.setOnClickListener {
+                Log.d("ProduitFragment", "Le bouton de retour a été cliqué.")
                 findNavController().popBackStack()
             }
-
-            val cameraIntent = prendrePhoto.contract.createIntent(
-                requireContext(),
-                Uri.parse("")
-            )
-
-            // cameraIntent.addCategory(Intent.CATEGORY_APP_CALCULATOR) // Pour tester !
-            produitCamera.isEnabled = canResolveIntent(cameraIntent)
         }
 
         viewLifecycleOwner.lifecycleScope.launch {
@@ -180,6 +174,13 @@ class ProduitFragment : Fragment() {
         }, viewLifecycleOwner, Lifecycle.State.RESUMED)
     }
 
+    /**
+     * Permet de partager un produit.
+     * Lorsque l'utilisateur clique sur le bouton de partage, un intent est créé pour partager les informations du produit.
+     *
+     * @param produit Le produit à partager.
+     *
+     */
     private fun shareProduit(produit: Produit) {
         val shareIntent = Intent(Intent.ACTION_SEND)
         shareIntent.type = "text/plain"
@@ -214,72 +215,6 @@ class ProduitFragment : Fragment() {
 
 
     /**
-     * Vérifie si la caméra est disponible sur l'appareil.
-     *
-     * @return true si la caméra est disponible, false sinon.
-     */
-    private fun isCameraAvailable(): Boolean {
-        val packageManager: PackageManager = requireActivity().packageManager
-        return packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
-                packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_ANY)
-    }
-
-    /**
-     * Vérifie les permissions de la caméra et les demande si nécessaire.
-     */
-    /*
-    private fun checkCameraPermissions() {
-        if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-            requestPermissions(arrayOf(Manifest.permission.CAMERA), CAMERA_REQUEST_CODE)
-        } else {
-            if (isCameraAvailable()) {
-                launchCamera()
-            } else {
-                Toast.makeText(requireContext(), "La caméra n'est pas disponible sur cet appareil.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-
-    /**
-     * Gère les résultats de la demande de permission.
-     */
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        if (requestCode == CAMERA_REQUEST_CODE) {
-            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permission accordée, vérifie la disponibilité de la caméra
-                if (isCameraAvailable()) {
-                    launchCamera()
-                } else {
-                    Toast.makeText(requireContext(), "La caméra n'est pas disponible sur cet appareil.", Toast.LENGTH_SHORT).show()
-                }
-            } else {
-                // Permission refusée
-                Toast.makeText(requireContext(), "Permission de la caméra refusée.", Toast.LENGTH_SHORT).show()
-            }
-        }
-    }
-    */
-
-
-    /**
-     * Lance l'intent pour prendre une photo.
-     */
-    private fun launchCamera() {
-        Toast.makeText(requireContext(), "Bouton caméra cliqué", Toast.LENGTH_SHORT).show()
-        photoFilename = "IMG_${Date()}.JPG"
-        val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
-        Log.d("ProduitFragment", photoFichier.toString())
-        val photoUri = FileProvider.getUriForFile(
-            requireContext(),
-            "com.example.fileprovider",
-            photoFichier
-        )
-        Log.d("ProduitFragment", photoUri.toString())
-        prendrePhoto.launch(photoUri)
-    }
-
-    /**
      * Met à jour l'interface utilisateur avec les données du produit.
      *
      * @param produit Le produit à afficher.
@@ -302,8 +237,18 @@ class ProduitFragment : Fragment() {
                 spinnerTypeProduit.setSelection(position)
 
             produitCamera.setOnClickListener {
-                launchCamera()
+                Log.d("ProduitFragment", "Le bouton de la caméra a été cliqué.")
+                // Code pour prendre une photo
+                photoFilename = "IMG_${Date()}.JPG"
+                val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
+                val photoUri = FileProvider.getUriForFile(
+                    requireContext(),
+                    "com.example.tp1_restaurant.fileprovider",
+                    photoFichier
+                )
+                prendrePhoto.launch(photoUri)
             }
+
         }
         updatePhoto(produit.photoProduit)
     }
@@ -360,5 +305,13 @@ class ProduitFragment : Fragment() {
                 binding.produitPhoto.tag = null
             }
         }
+    }
+
+    /**
+     * Lorsque la vue est détruite.
+     */
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 }
