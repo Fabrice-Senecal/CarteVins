@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment
 import android.widget.ArrayAdapter
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.core.view.MenuHost
 import androidx.core.view.MenuProvider
@@ -28,6 +29,7 @@ import com.example.tp1_restaurant.produit.TypeProduit
 import kotlinx.coroutines.launch
 import java.io.File
 import java.util.Date
+import android.Manifest
 
 
 /**
@@ -50,6 +52,16 @@ class ProduitFragment : Fragment() {
         ProduitViewModel.ProduitViewModelFactory(args.produitId)
     }
 
+    private val requestCameraPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            launchCamera()
+        } else {
+            Toast.makeText(requireContext(), "La permission d'utiliser la caméra est requise pour prendre des photos.", Toast.LENGTH_SHORT).show()
+        }
+    }
+
     private val prendrePhoto =
         registerForActivityResult(ActivityResultContracts.TakePicture()) { photoPrise: Boolean ->
             if (photoPrise && photoFilename != null) {
@@ -64,6 +76,24 @@ class ProduitFragment : Fragment() {
 
     private var photoFilename: String? = null
 
+
+    private fun hasCameraPermission(): Boolean {
+        return ContextCompat.checkSelfPermission(
+            requireContext(),
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
+    }
+
+    private fun launchCamera() {
+        photoFilename = "IMG_${Date()}.JPG"
+        val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
+        val photoUri = FileProvider.getUriForFile(
+            requireContext(),
+            "com.example.tp1_restaurant.fileprovider",
+            photoFichier
+        )
+        prendrePhoto.launch(photoUri)
+    }
 
     /**
      * Lorsque la vue est créée.
@@ -132,6 +162,16 @@ class ProduitFragment : Fragment() {
             boutonRetour.setOnClickListener {
                 Log.d("ProduitFragment", "Le bouton de retour a été cliqué.")
                 findNavController().popBackStack()
+            }
+
+            produitCamera.setOnClickListener {
+                Log.d("ProduitFragment", "Le bouton de la caméra a été cliqué.")
+
+                if (hasCameraPermission()) {
+                    launchCamera()
+                } else {
+                    requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                }
             }
         }
 
@@ -236,19 +276,6 @@ class ProduitFragment : Fragment() {
             if (spinnerTypeProduit.selectedItemPosition != position)
                 spinnerTypeProduit.setSelection(position)
 
-            produitCamera.setOnClickListener {
-                Log.d("ProduitFragment", "Le bouton de la caméra a été cliqué.")
-                // Code pour prendre une photo
-                photoFilename = "IMG_${Date()}.JPG"
-                val photoFichier = File(requireContext().applicationContext.filesDir, photoFilename)
-                val photoUri = FileProvider.getUriForFile(
-                    requireContext(),
-                    "com.example.tp1_restaurant.fileprovider",
-                    photoFichier
-                )
-                prendrePhoto.launch(photoUri)
-            }
-
         }
         updatePhoto(produit.photoProduit)
     }
@@ -267,17 +294,6 @@ class ProduitFragment : Fragment() {
             }
         }
         return 0 // Default
-    }
-
-    /**
-     * Vérifie si l'intent donné peut être résolu par une activité présente sur l'appareil.
-     *
-     * @param intent L'intent à vérifier.
-     * @return true si l'intent peut être résolu, false sinon.
-     */
-    private fun canResolveIntent(intent: Intent): Boolean {
-        val packageManager: PackageManager = requireActivity().packageManager
-        return intent.resolveActivity(packageManager) != null
     }
 
     /**

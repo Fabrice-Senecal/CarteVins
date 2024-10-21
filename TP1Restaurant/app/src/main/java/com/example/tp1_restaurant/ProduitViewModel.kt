@@ -10,6 +10,13 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+/**
+ * ViewModel pour un produit.
+ *
+ * @constructor Crée un ProduitViewModel.
+ *
+ * @author Mouhammad Wagane Diouf et Fabrice Sénécal
+ */
 class ProduitViewModel(produitId: UUID) : ViewModel() {
     private val produitRepository = ProduitRepository.get()
 

@@ -11,7 +11,6 @@ import com.example.tp1_restaurant.produit.Produit
 import com.example.tp1_restaurant.produit.TypeProduit
 import java.util.UUID
 
-// A fix
 /**
  * La classe ProduitHolder permet de lier les données du produit à la vue.
  *
