@@ -1,7 +1,5 @@
-[![Review Assignment Due Date](https://classroom.github.com/assets/deadline-readme-button-22041afd0340ce965d47ae6ef1cefeee28c7c493a6346c4f15d667ab976d596c.svg)](https://classroom.github.com/a/w0wfVsyL)
-# TP1
-
-## Mise en contexte
+# Ce travail à été complèté dans un contexte scolaire
+## Mise en contexte du travail demandé
 Un restaurateur vous approche pour créer une application mobile qui sera utilisée par les sommeliers
 et sommelières de son restaurant pour gérer et présenter les différentes boissons offertes à leurs
 clients.
