@@ -24,5 +24,5 @@ Gabriel T. St-Hilaire
 Ajusté par Vincent Beauregard
 
 #### Auteurs du programme
-Fabrice Senécal
+Fabrice Senécal  
 Mouhammad Wagane Diouf
