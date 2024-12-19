@@ -19,6 +19,10 @@ L’application aura 2 écrans principaux et chaque écran aura des composants �
 
 Vous devez créer votre propre thème pour l’application. Il vous faudra donc choisir des couleurs et un style visuel propre.
 
-#### Auteurs
+#### Auteurs de la situation problème
 Gabriel T. St-Hilaire  
 Ajusté par Vincent Beauregard
+
+#### Auteurs du programme
+Fabrice Senécal
+Mouhammad Wagane Diouf
